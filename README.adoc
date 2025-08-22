@@ -1,0 +1,17 @@
+= Vertx-avaje-inject
+
+image:https://img.shields.io/badge/vert.x-5.0.2-purple.svg[link="https://vertx.io"]
+
+This application was generated using http://start.vertx.io
+
+== Building
+
+To launch your tests:
+```
+./mvnw clean test
+```
+
+To package your application:
+```
+./mvnw clean package
+```
