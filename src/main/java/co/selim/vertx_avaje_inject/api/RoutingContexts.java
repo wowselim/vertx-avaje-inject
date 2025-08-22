@@ -7,17 +7,18 @@ import io.vertx.ext.web.RoutingContext;
 public final class RoutingContexts {
 
   private static final CharSequence APPLICATION_JSON =
-      HttpHeaders.createOptimized("application/json; charset=utf-8");
+    HttpHeaders.createOptimized("application/json; charset=utf-8");
   private static final Jsonb jsonb = Jsonb.instance();
 
-  private RoutingContexts() {}
+  private RoutingContexts() {
+  }
 
   public static void respondWithJson(RoutingContext routingContext, int statusCode, Object body) {
     routingContext
-        .response()
-        .setStatusCode(statusCode)
-        .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-        .end(jsonb.toJson(body));
+      .response()
+      .setStatusCode(statusCode)
+      .putHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+      .end(jsonb.toJson(body));
   }
 
   public static void respondWithJson(RoutingContext routingContext, Object body) {
