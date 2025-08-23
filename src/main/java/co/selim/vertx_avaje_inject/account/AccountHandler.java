@@ -1,6 +1,7 @@
 package co.selim.vertx_avaje_inject.account;
 
 import co.selim.vertx_avaje_inject.api.ApiHandler;
+import io.avaje.validation.Validator;
 import io.vertx.core.http.HttpHeaders;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -14,6 +15,7 @@ import static co.selim.vertx_avaje_inject.api.RoutingContexts.respondWithJson;
 @Singleton
 public class AccountHandler implements ApiHandler {
 
+  private static final Validator validator = Validator.instance();
   private final AccountRepository accountRepository;
 
   @Inject
@@ -47,6 +49,7 @@ public class AccountHandler implements ApiHandler {
 
   private void save(RoutingContext routingContext) {
     NewAccount newAccount = getBodyAsPojo(routingContext, NewAccount.class);
+    validator.validate(newAccount);
     Account account = accountRepository.save(newAccount);
     routingContext.response().putHeader(HttpHeaders.LOCATION, "/users/" + account.id());
     respondWithJson(routingContext, 201, account);

@@ -1,8 +1,10 @@
 package co.selim.vertx_avaje_inject.web;
 
 import co.selim.vertx_avaje_inject.api.ApiHandler;
+import co.selim.vertx_avaje_inject.api.RoutingContexts;
 import io.avaje.config.Config;
 import io.avaje.inject.Prototype;
+import io.avaje.validation.ConstraintViolationException;
 import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
 import io.vertx.ext.web.Router;
@@ -29,11 +31,24 @@ public class ApiVerticle extends VerticleBase {
   @Override
   public Future<?> start() {
     Router router = Router.router(vertx);
-    router.route()
+    router.route("/api/*")
       .handler(LoggerHandler.create(LoggerFormat.TINY))
       .handler(FaviconHandler.create(vertx));
 
     Router apiRouter = Router.router(vertx);
+    apiRouter.route()
+      .failureHandler(ctx -> {
+        if (ctx.response().ended()) {
+          return;
+        }
+
+        Throwable failure = ctx.failure();
+        if (failure instanceof ConstraintViolationException cve) {
+          RoutingContexts.respondWithJson(ctx, 400, new ErrorResponse(400, cve.violations().toString()));
+        } else {
+          RoutingContexts.respondWithJson(ctx, 500, new ErrorResponse(500, failure.getMessage()));
+        }
+      });
     apiHandlers.forEach(handler ->
       handler.init(apiRouter)
     );

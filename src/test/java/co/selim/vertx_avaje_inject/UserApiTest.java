@@ -38,4 +38,15 @@ public class UserApiTest extends IntegrationTest {
       .body("id", is(3))
       .body("name", is("Chuck Norris"));
   }
+
+  @Test
+  public void testSaveInvalidName() {
+    RestAssured.given()
+      .body(new NewAccount(""), objectMapper)
+      .when()
+      .post("/api/users")
+      .then()
+      .assertThat()
+      .statusCode(400);
+  }
 }
