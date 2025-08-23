@@ -1,7 +1,6 @@
 package co.selim.vertx_avaje_inject.web;
 
 import co.selim.vertx_avaje_inject.api.ApiHandler;
-import co.selim.vertx_avaje_inject.api.RoutingContexts;
 import io.avaje.config.Config;
 import io.avaje.inject.Prototype;
 import io.avaje.validation.ConstraintViolationException;
@@ -17,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
+import static co.selim.vertx_avaje_inject.api.RoutingContexts.respondWithJson;
+
 @Prototype
 public class ApiVerticle extends VerticleBase {
 
@@ -31,12 +32,9 @@ public class ApiVerticle extends VerticleBase {
   @Override
   public Future<?> start() {
     Router router = Router.router(vertx);
-    router.route("/api/*")
+    router.route()
       .handler(LoggerHandler.create(LoggerFormat.TINY))
-      .handler(FaviconHandler.create(vertx));
-
-    Router apiRouter = Router.router(vertx);
-    apiRouter.route()
+      .handler(FaviconHandler.create(vertx))
       .failureHandler(ctx -> {
         if (ctx.response().ended()) {
           return;
@@ -44,11 +42,13 @@ public class ApiVerticle extends VerticleBase {
 
         Throwable failure = ctx.failure();
         if (failure instanceof ConstraintViolationException cve) {
-          RoutingContexts.respondWithJson(ctx, 400, new ErrorResponse(400, cve.violations().toString()));
+          respondWithJson(ctx, 400, new ErrorResponse(400, cve.violations().toString()));
         } else {
-          RoutingContexts.respondWithJson(ctx, 500, new ErrorResponse(500, failure.getMessage()));
+          respondWithJson(ctx, 500, new ErrorResponse(500, failure.getMessage()));
         }
       });
+
+    Router apiRouter = Router.router(vertx);
     apiHandlers.forEach(handler ->
       handler.init(apiRouter)
     );
