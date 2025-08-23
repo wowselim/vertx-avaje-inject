@@ -1,7 +1,7 @@
 package co.selim.vertx_avaje_inject;
 
-import co.selim.vertx_avaje_inject.account.ApiVerticle;
 import co.selim.vertx_avaje_inject.email.EmailVerticle;
+import co.selim.vertx_avaje_inject.web.ApiVerticle;
 import io.avaje.inject.BeanScope;
 import io.vertx.core.Deployable;
 import io.vertx.core.DeploymentOptions;
@@ -14,12 +14,10 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WebApplication {
+public class Application {
 
-  private static final Logger LOG = LoggerFactory.getLogger(WebApplication.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Application.class);
   private static final int cpuCount = Runtime.getRuntime().availableProcessors();
-
-  private List<String> deploymentIds;
 
   public void start(Vertx vertx) {
     BeanScope beanScope = BeanScope.builder()
@@ -39,18 +37,17 @@ public class WebApplication {
       .collect(Collectors.toList());
 
     Future.all(deployments)
-      .onSuccess(future -> {
-        deploymentIds = future.list();
+      .onSuccess(ignore -> {
         LOG.info("Deployment successful");
       })
       .onFailure(t -> {
-        t.printStackTrace(System.err);
+        LOG.error("Deployment failed", t);
         vertx.close();
       });
   }
 
   public static void main(String[] args) {
     Vertx vertx = Vertx.vertx();
-    new WebApplication().start(vertx);
+    new Application().start(vertx);
   }
 }

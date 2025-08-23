@@ -26,6 +26,8 @@ public final class RoutingContexts {
   }
 
   public static <T> T getBodyAsPojo(RoutingContext routingContext, Class<T> pojoClass) {
-    return jsonb.type(pojoClass).fromJson(routingContext.body().asString());
+    String json = routingContext.body().asString();
+    return jsonb.type(pojoClass)
+      .fromJson(json);
   }
 }

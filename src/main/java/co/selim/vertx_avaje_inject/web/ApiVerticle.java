@@ -1,6 +1,7 @@
-package co.selim.vertx_avaje_inject.account;
+package co.selim.vertx_avaje_inject.web;
 
 import co.selim.vertx_avaje_inject.api.ApiHandler;
+import io.avaje.config.Config;
 import io.avaje.inject.Prototype;
 import io.vertx.core.Future;
 import io.vertx.core.VerticleBase;
@@ -43,7 +44,7 @@ public class ApiVerticle extends VerticleBase {
 
     return vertx.createHttpServer()
       .requestHandler(router)
-      .listen(8888)
+      .listen(Config.getInt("server.port"))
       .onSuccess(http ->
         LOG.info("Listening on port {}", http.actualPort())
       );
