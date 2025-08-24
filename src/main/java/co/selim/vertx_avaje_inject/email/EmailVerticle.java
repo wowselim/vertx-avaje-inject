@@ -30,7 +30,6 @@ public class EmailVerticle extends VerticleBase {
         LOG.info("Sending welcome message to new user {} with id {}", account.name(), account.id());
       });
 
-    LOG.info("Listening for email events");
     return Future.succeededFuture();
   }
 }

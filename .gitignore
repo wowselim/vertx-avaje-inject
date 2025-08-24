@@ -1,6 +1,7 @@
 ### Vert.x ###
 .vertx/
 .idea/
+avaje-processors.txt
 
 ### Eclipse ###
 

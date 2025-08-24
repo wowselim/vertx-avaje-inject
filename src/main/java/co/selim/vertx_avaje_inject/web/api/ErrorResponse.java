@@ -1,4 +1,4 @@
-package co.selim.vertx_avaje_inject.web;
+package co.selim.vertx_avaje_inject.web.api;
 
 import io.avaje.jsonb.Json;
 

@@ -1,7 +1,7 @@
 package co.selim.vertx_avaje_inject;
 
 import co.selim.vertx_avaje_inject.email.EmailVerticle;
-import co.selim.vertx_avaje_inject.web.ApiVerticle;
+import co.selim.vertx_avaje_inject.web.HttpVerticle;
 import io.avaje.inject.BeanScope;
 import io.vertx.core.Deployable;
 import io.vertx.core.DeploymentOptions;
@@ -26,14 +26,17 @@ public class Application {
       .build();
 
     List<Class<? extends Deployable>> deployables = List.of(
-      ApiVerticle.class,
+      HttpVerticle.class,
       EmailVerticle.class
     );
     DeploymentOptions deploymentOptions = new DeploymentOptions().setInstances(cpuCount);
 
     List<Future<?>> deployments = deployables
       .stream()
-      .map(c -> vertx.deployVerticle(() -> beanScope.get(c), deploymentOptions))
+      .map(c ->
+        vertx.deployVerticle(() -> beanScope.get(c), deploymentOptions)
+          .onSuccess(ignore -> LOG.info("Deployed {}", c.getSimpleName()))
+      )
       .collect(Collectors.toList());
 
     Future.all(deployments)
